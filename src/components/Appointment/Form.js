@@ -21,7 +21,7 @@ export default function Form(props) {
   return (
     <main className="appointment__card appointment__card--create">
       <section className="appointment__card-left">
-        <form autoComplete="off">
+        <form autoComplete="off" onSubmit={e => e.preventDefault()}>
           <input
             className="appointment__create-input text--semi-bold"
             name="name"
@@ -35,7 +35,6 @@ export default function Form(props) {
           interviewers={interviewers}
           value={interviewer}
           onChange={setInterviewer}
-          onSubmit={e => e.preventDefault()}
         />
       </section>
       <section className="appointment__card-right">
