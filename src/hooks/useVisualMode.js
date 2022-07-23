@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export default function useVisualMode(initial) {
   const [mode, setMode] = useState(initial);
   const [history, setHistory] = useState([initial]);
-
   // if replace is false, add the mode to history, if true we don't add mode to history
   const transition = (mode, replace = false) => {
     setMode(mode);
@@ -12,7 +11,6 @@ export default function useVisualMode(initial) {
       setHistory(prev => [...prev, mode]);
     }
   };
-  
   // go back by setting mode to previous one in history and remove the last item in history array.
   const back = () => {
     if (history.length > 1) {
