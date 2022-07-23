@@ -19,7 +19,13 @@ export default function Appointment(props) {
     <article className="appointment">
       <Header time={time} />
       <Fragment>
-      {interview ? <Show student={interview.student} interviewer={interview.interviewer} /> : <Empty />}
+        {mode === EMPTY && <Empty onAdd={() => console.log('Clicked onAdd')} />}
+        {mode === SHOW && (
+          <Show
+            student={interview.student}
+            interviewer={interview.interviewer}
+          />
+        )}
       </Fragment>
     </article>
   );
