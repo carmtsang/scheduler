@@ -18,11 +18,14 @@ export default function Appointment(props) {
   );
   
   const save = (name, interviewer) => {
+    // creates an interview obj from arguments in onSave
     const interview = {
       student: name,
       interviewer
     };
     bookInterview(id, interview);
+
+    transition(SHOW);
   };
 
   return (
