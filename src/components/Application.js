@@ -35,7 +35,20 @@ export default function Application(props) {
 
   const bookInterview = (id, interview) => {
     console.log(id, interview)
+    // create the appointment object w/ values copied form existing appointment
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+    // replace existing record with the matching id.
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
+
+    setState({...state, appointments })
   };
+
 
   const schedule = dailyAppointments.map(appointment => {
     const interview = getInterview(state,appointment.interview);
