@@ -17,7 +17,6 @@ export default function Appointment(props) {
     interview ? SHOW : EMPTY
   );
   
-
   return (
     <article className="appointment">
       <Header time={time} />
@@ -34,7 +33,7 @@ export default function Appointment(props) {
         <Form 
           onSave={() => {}}
           interviewers={interviewers}
-          onCancel={() => transition(EMPTY)}
+          onCancel={() => back()}
         />)}
       </Fragment>
     </article>
