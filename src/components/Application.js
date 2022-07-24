@@ -27,6 +27,11 @@ export default function Application(props) {
       // set state after retrieving api.
       setState(prev =>({...prev, days: all[0].data, appointments: all[1].data, interviewers: all[2].data }))
     })
+    .catch(err => {
+      console.log(err.response.status);
+      console.log(err.response.headers);
+      console.log(err.response.data);
+    })
   }, []);
 
   // get arrays for daily appointments & interviews
@@ -45,10 +50,17 @@ export default function Application(props) {
       ...state.appointments,
       [id]: appointment
     };
+    setState({...state, appointments });
 
-    setState({...state, appointments })
+    axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
+      .then(res => {
+        console.log(res)
+        setState(prev => ({...prev}))
+      })
+      .catch(err => {
+        console.log(err)
+      });
   };
-
 
   const schedule = dailyAppointments.map(appointment => {
     const interview = getInterview(state,appointment.interview);
