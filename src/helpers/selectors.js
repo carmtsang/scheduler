@@ -24,3 +24,15 @@ export function getInterview(state, interview) {
     }
   };
 };
+
+// loop through state.days, if it matches the day, for each interviewers, push the interviewer obj to results
+export function getInterviewersForDay(state, day) {
+  let results = [];
+  for (let dayAppointments of state.days) {
+    if (dayAppointments.name === day) {
+      dayAppointments.interviewers.forEach(person => results.push(state.interviewers[person]))
+    }
+  };
+
+  return results;
+};
