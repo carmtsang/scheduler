@@ -52,9 +52,8 @@ export default function Application(props) {
     };
     setState({...state, appointments });
 
-    axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
-      .then(res => {
-        console.log(res)
+    return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
+      .then(() => {
         setState(prev => ({...prev}))
       })
       .catch(err => {
