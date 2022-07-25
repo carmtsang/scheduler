@@ -32,14 +32,23 @@ export default function Application(props) {
       console.log(err.response.headers);
       console.log(err.response.data);
     })
-  }, []);
+  }, [state.days, state.appointments]);
 
   // get arrays for daily appointments & interviews
   dailyAppointments = getAppointmentsForDay(state, state.day);
   let dailyInterviewers = getInterviewersForDay(state, state.day);
 
+  const cancelInterview = id => {
+    return axios.delete(`http://localhost:8001/api/appointments/${id}`)
+    .then(() => {
+      setState(prev => ({...prev}))
+    })
+    .catch(err => {
+      console.log(err)
+    });
+  };
+
   const bookInterview = (id, interview) => {
-    console.log(id, interview)
     // create the appointment object w/ values copied form existing appointment
     const appointment = {
       ...state.appointments[id],
@@ -61,6 +70,9 @@ export default function Application(props) {
       });
   };
 
+
+
+
   const schedule = dailyAppointments.map(appointment => {
     const interview = getInterview(state,appointment.interview);
 
@@ -71,6 +83,7 @@ export default function Application(props) {
       interview={interview} 
       interviewers={dailyInterviewers}
       bookInterview={bookInterview}
+      cancelInterview={cancelInterview}
       />
     );
   });
