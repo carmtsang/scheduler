@@ -11,7 +11,7 @@ import Status from './Status'
 const EMPTY = 'EMPTY';
 const SHOW = 'SHOW';
 const CREATE = 'CREATE';
-const SAVING = 'SAVING'
+const SAVING = 'SAVING';
 
 export default function Appointment(props) {
   const  { id, time, interview, interviewers, bookInterview } = props;
@@ -19,16 +19,19 @@ export default function Appointment(props) {
     interview ? SHOW : EMPTY
   );
 
-  const save = (name, interviewer) => {
+  const onSave = (name, interviewer) => {
+    transition(SAVING, true);
     // creates an interview obj from arguments in onSave
     const interview = {
       student: name,
       interviewer
     };
 
-    bookInterview(id, interview);
-
-    transition(SHOW);
+    bookInterview(id, interview)
+      .then(() => {
+        transition(SHOW)
+      })
+      .catch(err => console.error(err))
   };
 
   return (
@@ -45,7 +48,7 @@ export default function Appointment(props) {
         }
         {mode === CREATE && (
           <Form 
-            onSave={save}
+            onSave={onSave}
             interviewers={interviewers}
             onCancel={() => back()}
           />)
