@@ -36,10 +36,7 @@ export default function Appointment(props) {
 
     bookInterview(id, interview)
       .then(() => transition(SHOW))
-      .catch(err => {
-        console.error(err)
-        transition(ERROR_SAVE)
-      })
+      .catch(err => transition(ERROR_SAVE, true))
   };
 
   const onDelete = (id) => {
@@ -47,10 +44,7 @@ export default function Appointment(props) {
 
     cancelInterview(id)
       .then(() => transition(EMPTY))
-      .catch(err => {
-        console.error(err)
-        transition(ERROR_DELETE)
-      });
+      .catch(err => transition(ERROR_DELETE, true));
   };
 
   return (
