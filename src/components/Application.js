@@ -43,9 +43,6 @@ export default function Application(props) {
     .then(() => {
       setState(prev => ({...prev}))
     })
-    .catch(err => {
-      console.log(err)
-    });
   };
 
   const bookInterview = (id, interview) => {
@@ -65,9 +62,7 @@ export default function Application(props) {
       .then(() => {
         setState(prev => ({...prev}))
       })
-      .catch(err => {
-        console.log(err)
-      });
+
   };
 
 
