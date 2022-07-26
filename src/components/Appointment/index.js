@@ -15,6 +15,7 @@ const CREATE = 'CREATE';
 const SAVING = 'SAVING';
 const DELETE = 'DELETE';
 const CONFIRM = 'CONFIRM';
+const EDIT = 'EDIT';
 
 export default function Appointment(props) {
   const  { id, time, interview, interviewers, bookInterview, cancelInterview } = props;
@@ -45,7 +46,7 @@ export default function Appointment(props) {
         transition(EMPTY)
       })
       .catch(err => console.error(err));
-  }
+  };
 
   return (
     <article className="appointment">
@@ -55,7 +56,7 @@ export default function Appointment(props) {
         {mode === SHOW && (
           <Show student={interview.student} 
           interviewer={interview.interviewer}
-          onEdit={() => {}}
+          onEdit={() => transition(EDIT)}
           onDelete={() => transition(CONFIRM)}
           />)
         }
@@ -83,6 +84,14 @@ export default function Appointment(props) {
             onConfirm={() => onDelete(id)}
           />)
         }
+        {mode === EDIT && (
+          <Form
+            onSave={onSave}
+            interviewers={interviewers}
+            student={interview.student}
+            onCancel={() => back()}
+          />
+        )}
       </Fragment>
     </article>
   );
