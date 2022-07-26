@@ -53,7 +53,6 @@ export default function useApplicationData() {
       .then(() => {
         setState(prev => ({...prev}))
       })
-
   };
 
   return { state, setDay, bookInterview, cancelInterview };
