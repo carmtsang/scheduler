@@ -29,8 +29,7 @@ export default function useApplicationData() {
   }, []);
 
   // day appointment array interview === null, 
-  const updateSpots = (state, interview = null) => {
-
+  const updateSpots = (state, appointment = null) => {
     // using the current state, find  the current day object
     const currentDay = state.days.filter(d => d.name === state.day)[0];
     console.log('currentDay appointments in updateSpots:', currentDay.appointments)
@@ -43,27 +42,29 @@ export default function useApplicationData() {
         spots++;
       }
     }
-    console.log('spots:', spots)
+
     // loop through the days array, if the day is not equal
-    return state.days.map(eachDay => {
+    return state.days.map(dayObj => {
 
-      if (eachDay !== currentDay) {
-        return eachDay
+      if (dayObj !== currentDay) {
+        return dayObj
       }
-      const spot =  interview ? spots - 1: spots + 1
+      const spot =  appointment.interview ? spots - 1: spots + 1
 
-      return {...currentDay, 
+      return {...dayObj, 
         spots: spot}
     })
     
-
   }
 
   const cancelInterview = id => {
-    return axios.delete(`http://localhost:8001/api/appointments/${id}`)
+    const appointment = {
+      ...state.appointments[id],
+      interview: null
+    }
+    return axios.delete(`http://localhost:8001/api/appointments/${id}`, appointment)
     .then(() => {
-      setState(prev => ({...prev }))
-      const days = updateSpots(state);
+      const days = updateSpots(state, appointment);
       setState(prev => ({...prev, days}))
     })
   };
@@ -83,8 +84,7 @@ export default function useApplicationData() {
     console.log('state in book interview:', state)
     return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(() => {
-        setState(prev => ({...prev}))
-        const days = updateSpots(state, interview);
+        const days = updateSpots(state, appointment);
         setState(prev => ({...prev, days}))
       })
   };
