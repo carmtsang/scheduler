@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getAppointmentsForDay, getInterview } from 'helpers/selectors';
 
 export default function useApplicationData() {
   const [state, setState] = useState({
@@ -25,14 +26,28 @@ export default function useApplicationData() {
       console.log(err.response.headers);
       console.log(err.response.data);
     })
-  }, [state.days, state.appointments]);
+  }, []);
 
-  // get arrays for daily appointments & interviews
+  // day appointment array interview === null, 
+  const updateSpots = (state, appointments) => {
+    
+    const currentDay = state.days.filter(d => d.name === state.day);
+    let spots = 0;
+    
+    for (let appointment of currentDay.appointments) {
+      if (!currentDay.appointments[appointment]) {
+        spots++;
+      }
+    }
+
+    const day = {...currentDay, spots}
+
+  }
 
   const cancelInterview = id => {
     return axios.delete(`http://localhost:8001/api/appointments/${id}`)
     .then(() => {
-      setState(prev => ({...prev}))
+      setState(prev => ({...prev }))
     })
   };
 
@@ -51,7 +66,7 @@ export default function useApplicationData() {
 
     return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(() => {
-        setState(prev => ({...prev}))
+        setState(prev => ({...prev }))
       })
   };
 
