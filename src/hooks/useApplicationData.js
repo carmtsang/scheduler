@@ -29,18 +29,33 @@ export default function useApplicationData() {
   }, []);
 
   // day appointment array interview === null, 
-  const updateSpots = (state, appointments) => {
-    
-    const currentDay = state.days.filter(d => d.name === state.day);
+  const updateSpots = (state, interview = null) => {
+
+    // using the current state, find  the current day object
+    const currentDay = state.days.filter(d => d.name === state.day)[0];
+    console.log('currentDay appointments in updateSpots:', currentDay.appointments)
+
+    // loop thorugh the appointments,  if appointment is null, spots increase
     let spots = 0;
-    
     for (let appointment of currentDay.appointments) {
-      if (!currentDay.appointments[appointment]) {
+      console.log(state.appointments[appointment])
+      if (!state.appointments[appointment].interview) {
         spots++;
       }
     }
+    console.log('spots:', spots)
+    // loop through the days array, if the day is not equal
+    return state.days.map(eachDay => {
 
-    const day = {...currentDay, spots}
+      if (eachDay !== currentDay) {
+        return eachDay
+      }
+      const spot =  interview ? spots - 1: spots + 1
+
+      return {...currentDay, 
+        spots: spot}
+    })
+    
 
   }
 
@@ -48,6 +63,8 @@ export default function useApplicationData() {
     return axios.delete(`http://localhost:8001/api/appointments/${id}`)
     .then(() => {
       setState(prev => ({...prev }))
+      const days = updateSpots(state);
+      setState(prev => ({...prev, days}))
     })
   };
 
@@ -62,11 +79,13 @@ export default function useApplicationData() {
       ...state.appointments,
       [id]: appointment
     };
-    setState({...state, appointments });
-
+    setState(prev => ({...prev, appointments }));
+    console.log('state in book interview:', state)
     return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(() => {
-        setState(prev => ({...prev }))
+        setState(prev => ({...prev}))
+        const days = updateSpots(state, interview);
+        setState(prev => ({...prev, days}))
       })
   };
 
