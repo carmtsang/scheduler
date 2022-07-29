@@ -7,6 +7,27 @@ const SET_INTERVIEW = 'SET_INTERVIEW';
 
 function reducer(state, action) {
   const { day, days, appointments, interviewers, interview, id } = action
+  // return the days array, replacing the spots in the day that matches currentDay
+  // using the current state, find the day object. if the appointment interview is null, spot +1
+  const updateSpots = (state, appointments) => {
+    return state.days.map(dayObj => {
+      const currentDay = state.days.filter(d => d.name === state.day)[0];
+
+      if (dayObj !== currentDay) return dayObj;
+      
+      let spots = 0;
+      for (let appointment of currentDay.appointments) {
+        if (!appointments[appointment].interview) {
+          spots++;
+        }
+      };
+
+      return {
+        ...dayObj,
+        spots
+      };
+    })
+  };
 
   switch (action.type) {
     case SET_DAY: 
@@ -37,6 +58,7 @@ function reducer(state, action) {
       return {
         ...state,
         appointments,
+        days: updateSpots(state, appointments)
       }
     }
     default:
@@ -52,7 +74,7 @@ export default function useApplicationData() {
     appointments: {},
     interviewers: {}
   };
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const setDay = day => dispatch({ type: SET_DAY, day });
 
@@ -88,31 +110,8 @@ export default function useApplicationData() {
 
   const cancelInterview = id => {
     return axios.delete(`http://localhost:8001/api/appointments/${id}`)
-      .then(() => dispatch({ type: SET_INTERVIEW, id, interview: null }))
+      .then(() => dispatch({ type: SET_INTERVIEW, id, interview: null}))
   };
-
-  // using the current state, find the day object. if the appointment interview is null, spot +1
-  // return the days array, replacing the spots in the day that matches currentDay
-  const updateSpots = (state, appointments) => {
-    const currentDay = state.days.filter(d => d.name === state.day)[0];
-
-    let spots = 0;
-    for (let appointment of currentDay.appointments) {
-      if (!appointments[appointment].interview) {
-        spots++;
-      }
-    };
-
-    return state.days.map(dayObj => {
-      if (dayObj !== currentDay) return dayObj;
-    
-      return {
-        ...dayObj, 
-        spots
-      };
-    })
-  }
-
 
   return { state, setDay, bookInterview, cancelInterview };
 }
