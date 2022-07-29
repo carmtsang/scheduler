@@ -2,23 +2,65 @@ import { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
 
 export default function useApplicationData() {
-  const [state, setState] = useState({
+  const SET_DAY = 'SET_DAY';
+  const SET_APPLICATION_DATA = 'SET_APPLICATION_DATA';
+  const SET_INTERVIEW = 'SET_INTERVIEW';
+  
+  const initialState = {
     day: "Monday",
     days: [],
     appointments: {},
     interviewers: {}
-  });
-  const setDay = day => setState({...state, day });
+  }
 
-  // api calls & setting state of days, appointment & interviews
+  function reducer(state, action) {
+    switch (action.type) {
+      case SET_DAY: 
+        return {...state, day};
+      case SET_APPLICATION_DATA: 
+        return {
+          ...state,
+          days,
+          appointments,
+          interviews
+        };
+      case SET_INTERVIEW: {
+        const appointment = {
+          ...state.appointments[id],
+          interview: { ...interview }
+        }
+     
+        const appointments = {
+          ...state.appointments,
+          [id]: appointment
+        }
+
+        const days = updateSpots(state, appointments)
+
+        return {
+          ...state,
+          appointments,
+          days
+        }
+      }
+      default:
+        throw new Error(`Tried to reduce with unsupported action type: ${action.type}`);
+    }
+  }
+
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+
+  const setDay = day => dispatch({ type: SET_DAY, day });
+
+  // api calls & setState of days, appointment & interviews
   useEffect(() => {
     Promise.all([
       axios.get('/api/days'),
       axios.get('/api/appointments'),
       axios.get('/api/interviewers')
     ]).then(all => {
-      // set state after retrieving api.
-      setState(prev =>({...prev, days: all[0].data, appointments: all[1].data, interviewers: all[2].data }))
+      dispatch({ type: SET_APPLICATION_DATA, days: all[0].data, appointments: all[1].data, interviewers: all[2].data })
     })
     .catch(err => {
       console.log(err.response.status);
@@ -28,19 +70,11 @@ export default function useApplicationData() {
   }, []);
 
   const bookInterview = (id, interview) => {
-    const appointment = {
-      ...state.appointments[id],
-      interview: { ...interview }
-    };
- 
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment
-    };
+
     
-    return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
+    return axios.put(`http://localhost:8001/api/appointments/${id}`, interview)
       .then(() => {
-        setState(prev => ({...prev, appointments, days: updateSpots(state, appointments)}))
+        dispatch({ type: SET_INTERVIEW, value: id, interview })
       })
   }
 
