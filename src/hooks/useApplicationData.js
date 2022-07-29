@@ -1,57 +1,61 @@
 import { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
+import { actions } from '@storybook/addon-actions';
+
+const SET_DAY = 'SET_DAY';
+const SET_APPLICATION_DATA = 'SET_APPLICATION_DATA';
+const SET_INTERVIEW = 'SET_INTERVIEW';
+
+
+function reducer(state, action) {
+  switch (action.type) {
+    case SET_DAY: 
+      return {...state, 
+        day: action.payload
+      };
+
+    case SET_APPLICATION_DATA: 
+      return {
+        ...state,
+        days: action.payload.days,
+        appointments: action.payload.appointments,
+        interviewers: action.payload.interviewers
+      };
+
+    case SET_INTERVIEW: {
+
+      const appointment = {
+        ...state.appointments[action.payload.id],
+        interview: { ...action.payload.interview }
+      }
+   
+      const appointments = {
+        ...state.appointments,
+        [action.payload.id]: appointment
+      }
+
+      return {
+        ...state,
+        appointments: appointments
+  
+      }
+    }
+    default:
+      throw new Error(`Tried to reduce with unsupported action type: ${action.type}`);
+  }
+}
+
 
 export default function useApplicationData() {
-  const SET_DAY = 'SET_DAY';
-  const SET_APPLICATION_DATA = 'SET_APPLICATION_DATA';
-  const SET_INTERVIEW = 'SET_INTERVIEW';
-  
   const initialState = {
     day: "Monday",
     days: [],
     appointments: {},
     interviewers: {}
-  }
-
-  function reducer(state, action) {
-    switch (action.type) {
-      case SET_DAY: 
-        return {...state, day};
-      case SET_APPLICATION_DATA: 
-        return {
-          ...state,
-          days,
-          appointments,
-          interviews
-        };
-      case SET_INTERVIEW: {
-        const appointment = {
-          ...state.appointments[id],
-          interview: { ...interview }
-        }
-     
-        const appointments = {
-          ...state.appointments,
-          [id]: appointment
-        }
-
-        const days = updateSpots(state, appointments)
-
-        return {
-          ...state,
-          appointments,
-          days
-        }
-      }
-      default:
-        throw new Error(`Tried to reduce with unsupported action type: ${action.type}`);
-    }
-  }
-
+  };
   const [state, dispatch] = useReducer(reducer, initialState)
 
-
-  const setDay = day => dispatch({ type: SET_DAY, day });
+  const setDay = day => dispatch({ type: SET_DAY, payload: { day } });
 
   // api calls & setState of days, appointment & interviews
   useEffect(() => {
@@ -60,7 +64,13 @@ export default function useApplicationData() {
       axios.get('/api/appointments'),
       axios.get('/api/interviewers')
     ]).then(all => {
-      dispatch({ type: SET_APPLICATION_DATA, days: all[0].data, appointments: all[1].data, interviewers: all[2].data })
+      dispatch({ type: SET_APPLICATION_DATA, 
+        payload: {
+          days: all[0].data, 
+          appointments: all[1].data, 
+          interviewers: all[2].data
+        }
+        })
     })
     .catch(err => {
       console.log(err.response.status);
@@ -71,27 +81,26 @@ export default function useApplicationData() {
 
   const bookInterview = (id, interview) => {
 
-    
     return axios.put(`http://localhost:8001/api/appointments/${id}`, interview)
       .then(() => {
-        dispatch({ type: SET_INTERVIEW, value: id, interview })
+        dispatch({ type: SET_INTERVIEW, payload: { id, interview }})
       })
   }
 
   const cancelInterview = id => {
-    const appointment = {
-      ...state.appointments[id],
-      interview: null
-    }
+    // const appointment = {
+    //   ...state.appointments[id],
+    //   interview: null
+    // }
 
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment
-    };
+    // const appointments = {
+    //   ...state.appointments,
+    //   [id]: appointment
+    // };
    
     return axios.delete(`http://localhost:8001/api/appointments/${id}`)
     .then(() => {
-      setState(({...state, appointments, days: updateSpots(state, appointments)}))
+      dispatch({ type: SET_INTERVIEW, payload:{id}})
     })
   };
 
