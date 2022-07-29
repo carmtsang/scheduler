@@ -13,9 +13,9 @@ export default function useApplicationData() {
   // api calls & setting state of days, appointment & interviews
   useEffect(() => {
     Promise.all([
-      axios.get('http://localhost:8001/api/days'),
-      axios.get('http://localhost:8001/api/appointments'),
-      axios.get('http://localhost:8001/api/interviewers')
+      axios.get('/api/days'),
+      axios.get('/api/appointments'),
+      axios.get('/api/interviewers')
     ]).then(all => {
       // set state after retrieving api.
       setState(prev =>({...prev, days: all[0].data, appointments: all[1].data, interviewers: all[2].data }))
@@ -37,11 +37,11 @@ export default function useApplicationData() {
       ...state.appointments,
       [id]: appointment
     };
-    setState(prev => ({...prev, appointments }));
+    
     
     return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(() => {
-        setState(prev => ({...prev, days: updateSpots(state, appointment)}))
+        setState(prev => ({...prev, appointments, days: updateSpots(state, appointments)}))
       })
   }
 
@@ -50,21 +50,26 @@ export default function useApplicationData() {
       ...state.appointments[id],
       interview: null
     }
+
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
    
     return axios.delete(`http://localhost:8001/api/appointments/${id}`, appointment)
     .then(() => {
-      setState(({...state, days: updateSpots(state, appointment)}))
+      setState(({...state, appointments, days: updateSpots(state, appointments)}))
     })
   };
 
-  const updateSpots = (state, appointment) => {
+  const updateSpots = (state, appointments) => {
     // using the current state, find  the current day object
     const currentDay = state.days.filter(d => d.name === state.day)[0];
     // loop thorugh the appointments,  if appointment is null, spots increase
     let spots = 0;
     for (let appointment of currentDay.appointments) {
-      console.log(state.appointments[appointment])
-      if (!state.appointments[appointment].interview) {
+      console.log(appointments[appointment].interview)
+      if (!appointments[appointment].interview) {
         spots++;
       }
     }
@@ -74,10 +79,9 @@ export default function useApplicationData() {
       if (dayObj !== currentDay) {
         return dayObj
       }
-      const spot =  appointment.interview ? spots - 1: spots + 1
-
+    
       return {...dayObj, 
-        spots: spot}
+        spots}
     })
   }
 
