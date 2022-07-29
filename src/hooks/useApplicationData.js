@@ -38,7 +38,6 @@ export default function useApplicationData() {
       [id]: appointment
     };
     
-    
     return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(() => {
         setState(prev => ({...prev, appointments, days: updateSpots(state, appointments)}))
@@ -56,35 +55,34 @@ export default function useApplicationData() {
       [id]: appointment
     };
    
-    return axios.delete(`http://localhost:8001/api/appointments/${id}`, appointment)
+    return axios.delete(`http://localhost:8001/api/appointments/${id}`)
     .then(() => {
       setState(({...state, appointments, days: updateSpots(state, appointments)}))
     })
   };
 
+  // using the current state, find the day object. if the appointment interview is null, spot +1
+  // return the days array, replacing the spots in the day that matches currentDay
   const updateSpots = (state, appointments) => {
-    // using the current state, find  the current day object
     const currentDay = state.days.filter(d => d.name === state.day)[0];
-    // loop thorugh the appointments,  if appointment is null, spots increase
+
     let spots = 0;
     for (let appointment of currentDay.appointments) {
-      console.log(appointments[appointment].interview)
       if (!appointments[appointment].interview) {
         spots++;
       }
-    }
+    };
 
-    // loop through the days array, if the day is not equal
     return state.days.map(dayObj => {
-      if (dayObj !== currentDay) {
-        return dayObj
-      }
+      if (dayObj !== currentDay) return dayObj;
     
-      return {...dayObj, 
-        spots}
+      return {
+        ...dayObj, 
+        spots
+      };
     })
   }
 
-  
+
   return { state, setDay, bookInterview, cancelInterview };
 }
