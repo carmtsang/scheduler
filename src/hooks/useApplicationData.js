@@ -1,18 +1,18 @@
-import {  useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 
 const SET_DAY = 'SET_DAY';
 const SET_APPLICATION_DATA = 'SET_APPLICATION_DATA';
 const SET_INTERVIEW = 'SET_INTERVIEW';
 
-
 function reducer(state, action) {
-  const { day, days, appointments, interviewers, interview } = action
+  const { day, days, appointments, interviewers, interview, id } = action
 
   switch (action.type) {
     case SET_DAY: 
-      return {...state, 
-        day
+      return {
+        ...state,
+         day
       };
 
     case SET_APPLICATION_DATA: 
@@ -25,19 +25,18 @@ function reducer(state, action) {
 
     case SET_INTERVIEW: {
       const appointment = {
-        ...state.appointments[action.payload.id],
-        interview: interview && {...interview}
+        ...state.appointments[id],
+        interview: (!interview) ? null : { ...interview }
       };
    
       const appointments = {
         ...state.appointments,
-        [action.payload.id]: appointment
+        [id]: appointment
       };
 
       return {
         ...state,
-        appointments
-  
+        appointments,
       }
     }
     default:
@@ -79,18 +78,17 @@ export default function useApplicationData() {
   }, []);
 
   const bookInterview = (id, interview) => {
-
-    return axios.put(`http://localhost:8001/api/appointments/${id}`, interview)
-      .then(() => {
-        dispatch({ type: SET_INTERVIEW, id, interview })
-      })
-  }
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+    return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
+      .then(() => dispatch({ type: SET_INTERVIEW, id, interview }))
+  };
 
   const cancelInterview = id => {
     return axios.delete(`http://localhost:8001/api/appointments/${id}`)
-    .then(() => {
-      dispatch({ type: SET_INTERVIEW, id, interview: null })
-    })
+      .then(() => dispatch({ type: SET_INTERVIEW, id, interview: null }))
   };
 
   // using the current state, find the day object. if the appointment interview is null, spot +1
