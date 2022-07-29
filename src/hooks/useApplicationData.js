@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
-import { getAppointmentsForDay, getInterview } from 'helpers/selectors';
 
 export default function useApplicationData() {
   const [state, setState] = useState({
@@ -28,12 +27,39 @@ export default function useApplicationData() {
     })
   }, []);
 
-  // day appointment array interview === null, 
-  const updateSpots = (state, appointment = null) => {
+  const bookInterview = (id, interview) => {
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+ 
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
+    setState(prev => ({...prev, appointments }));
+    
+    return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
+      .then(() => {
+        setState(prev => ({...prev, days: updateSpots(state, appointment)}))
+      })
+  }
+
+  const cancelInterview = id => {
+    const appointment = {
+      ...state.appointments[id],
+      interview: null
+    }
+   
+    return axios.delete(`http://localhost:8001/api/appointments/${id}`, appointment)
+    .then(() => {
+      setState(({...state, days: updateSpots(state, appointment)}))
+    })
+  };
+
+  const updateSpots = (state, appointment) => {
     // using the current state, find  the current day object
     const currentDay = state.days.filter(d => d.name === state.day)[0];
-    console.log('currentDay appointments in updateSpots:', currentDay.appointments)
-
     // loop thorugh the appointments,  if appointment is null, spots increase
     let spots = 0;
     for (let appointment of currentDay.appointments) {
@@ -45,7 +71,6 @@ export default function useApplicationData() {
 
     // loop through the days array, if the day is not equal
     return state.days.map(dayObj => {
-
       if (dayObj !== currentDay) {
         return dayObj
       }
@@ -54,40 +79,8 @@ export default function useApplicationData() {
       return {...dayObj, 
         spots: spot}
     })
-    
   }
 
-  const cancelInterview = id => {
-    const appointment = {
-      ...state.appointments[id],
-      interview: null
-    }
-    return axios.delete(`http://localhost:8001/api/appointments/${id}`, appointment)
-    .then(() => {
-      const days = updateSpots(state, appointment);
-      setState(prev => ({...prev, days}))
-    })
-  };
-
-  const bookInterview = (id, interview) => {
-    // create the appointment object w/ values copied form existing appointment
-    const appointment = {
-      ...state.appointments[id],
-      interview: { ...interview }
-    };
-    // replace existing record with the matching id.
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment
-    };
-    setState(prev => ({...prev, appointments }));
-    console.log('state in book interview:', state)
-    return axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
-      .then(() => {
-        const days = updateSpots(state, appointment);
-        setState(prev => ({...prev, days}))
-      })
-  };
-
+  
   return { state, setDay, bookInterview, cancelInterview };
 }
