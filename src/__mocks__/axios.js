@@ -53,13 +53,8 @@ const fixtures = {
   }
 };
 
-const DAYS = 'DAYS';
-const APPOINTMENTS = 'APPOINTMENTS';
-const INTERVIEWERS = 'INTERVIEWERS';
-
 export default {
   get: jest.fn(url => {
-
     switch (url) {
       case '/api/days': {
         return Promise.resolve({
@@ -87,7 +82,6 @@ export default {
       }
     }
     
-
     // if (url === '/api/days') {
     //   return Promise.resolve({
     //     status: 200,
@@ -112,4 +106,4 @@ export default {
     //   });
     // }
   })
-}
+};
