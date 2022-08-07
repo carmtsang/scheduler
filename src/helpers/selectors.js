@@ -1,13 +1,11 @@
 // loop through state.days, if it matches the day, for each of the appointments, if the appointment obj matches, push it to the results array
-
 export function getAppointmentsForDay(state, day) {
   let results = [];
-  for (let dayAppointments of state.days) {
-    if (dayAppointments.name === day) {
-      dayAppointments.appointments.forEach(appointment => results.push(state.appointments[appointment]))
+  state.days.forEach(dayAppointment => {
+    if (dayAppointment.name === day) {
+      dayAppointment.appointments.forEach(appointment => results.push(state.appointments[appointment]))
     }
-  };
-
+  });
   return results;
 };
 
@@ -28,11 +26,10 @@ export function getInterview(state, interview) {
 // loop through state.days, if it matches the day, for each interviewers, push the interviewer obj to results
 export function getInterviewersForDay(state, day) {
   let results = [];
-  for (let dayAppointments of state.days) {
-    if (dayAppointments.name === day) {
-      dayAppointments.interviewers.forEach(person => results.push(state.interviewers[person]))
+  state.days.forEach(dayAppointment => {
+    if (dayAppointment.name === day) {
+      dayAppointment.interviewers.forEach(person => results.push(state.interviewers[person]))
     }
-  };
-
+  });
   return results;
 };
