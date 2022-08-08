@@ -81,29 +81,11 @@ export default {
         console.log('Cannot retrieve API')
       }
     }
-    
-    // if (url === '/api/days') {
-    //   return Promise.resolve({
-    //     status: 200,
-    //     statusTest: 'OK',
-    //     data: fixtures.days
-    //   });
-    // }
-
-    // if (url === '/api/appointments') {
-    //   return Promise.resolve({
-    //     status: 200,
-    //     statusTest: 'OK',
-    //     data: fixtures.appointments
-    //   });
-    // }
-
-    // if (url === '/api/interviewers') {
-    //   return Promise.resolve({
-    //     status: 200,
-    //     statusTest: 'OK',
-    //     data: fixtures.interviewers
-    //   });
-    // }
+  }),
+  put: jest.fn(() => {
+    return Promise.resolve({
+      status: 204,
+      statusTest: 'No Content'
+    })
   })
 };
