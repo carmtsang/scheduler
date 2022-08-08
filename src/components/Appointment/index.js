@@ -39,7 +39,7 @@ export default function Appointment(props) {
       .catch(err => transition(ERROR_SAVE, true))
   };
 
-  const onDelete = (id) => {
+  const onDelete = () => {
     transition(DELETE, true);
 
     cancelInterview(id)
@@ -63,7 +63,7 @@ export default function Appointment(props) {
           <Form 
             onSave={onSave}
             interviewers={interviewers}
-            onCancel={() => back()}
+            onCancel={back}
           />)
         }
         {mode === SAVING && (
@@ -79,8 +79,8 @@ export default function Appointment(props) {
         {mode === CONFIRM && (
           <Confirm
             message={'Delete the interview?'}
-            onCancel={() => back()}
-            onConfirm={() => onDelete(id)}
+            onCancel={back}
+            onConfirm={onDelete}
           />)
         }
         {mode === EDIT && (
@@ -88,19 +88,19 @@ export default function Appointment(props) {
             onSave={onSave}
             interviewers={interviewers}
             student={interview.student}
-            onCancel={() => back()}
+            onCancel={back}
           />)
         }
         {mode === ERROR_DELETE && (
           <Error
             message={'Appointment not deleted, please try again'}
-            onClose={() => back()}
+            onClose={back}
           />)
         }
         {mode === ERROR_SAVE && (
           <Error
             message={'Appointment not saved, please try again'}
-            onClose={() => back()}
+            onClose={back}
           />)
         }
       </Fragment>
