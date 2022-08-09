@@ -57,4 +57,30 @@ describe('Application', () => {
     expect(getByText(day, 'no spots remaining')).toBeInTheDocument();
   });
 
+  it('loads data, cancels an interview and increases the spots remaining for Monday by 1', async () => {
+    const { container } = render(<Application />);
+
+    await waitForElement(() => getByText(container, 'Archie Cohen'));
+    const appointments = getAllByTestId(container, "appointment");
+    const appointment = appointments[1]
+
+    fireEvent.click(getByAltText(appointment, 'Delete'));
+
+    expect(getByText(appointment, 'Delete the interview?')).toBeInTheDocument();
+
+    fireEvent.click(getByText(appointment, 'Confirm'));
+
+    expect(getByText(appointment, 'Deleting Interview')).toBeInTheDocument();
+
+    await waitForElementToBeRemoved(() => getByText(appointment, "Deleting Interview"));
+ 
+    expect(getByAltText(appointment,'Add'));
+   
+    const day = getAllByTestId(container, 'day').find(day => queryByText(day, 'Monday'));
+    
+    expect(getByText(day, '2 spots remaining')).toBeInTheDocument();
+  });
+
+
+
 })
