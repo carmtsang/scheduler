@@ -8,12 +8,16 @@ Interview scheduler uses `node v12.22.7`
 
 ![New Interview](https://github.com/carmtsang/scheduler/blob/master/docs/New%20Interview.png)
 Adding a new Interview
+
 ![New Interview Added](https://github.com/carmtsang/scheduler/blob/master/docs/Added.png)
 New interview added
+
 ![Delete](https://github.com/carmtsang/scheduler/blob/master/docs/Delete.png)
-Delete confirmation warning
+Warning prior to deleting an interview
+
 ![Storybook1](https://github.com/carmtsang/scheduler/blob/master/docs/Storybook%20Testing%201.png)
 Component testing for Interview List
+
 ![Cypress1](https://github.com/carmtsang/scheduler/blob/master/docs/Cypress%20Testing%202.png)
 Testing with Cypress
 
