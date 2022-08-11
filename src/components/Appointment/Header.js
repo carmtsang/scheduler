@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function Header(props) {
   return (
@@ -7,4 +7,4 @@ export default function Header(props) {
       <hr className="appointment__separator" />
     </header>
   );
-};
+}
