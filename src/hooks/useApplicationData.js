@@ -107,13 +107,13 @@ export default function useApplicationData() {
       interview: { ...interview },
     };
     return axios
-      .put(`http://localhost:8001/api/appointments/${id}`, appointment)
+      .put(`/api/appointments/${id}`, appointment)
       .then(() => dispatch({ type: SET_INTERVIEW, id, interview }));
   };
 
   const cancelInterview = (id) => {
     return axios
-      .delete(`http://localhost:8001/api/appointments/${id}`)
+      .delete(`/api/appointments/${id}`)
       .then(() => dispatch({ type: SET_INTERVIEW, id, interview: null }));
   };
 
